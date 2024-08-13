@@ -7,67 +7,46 @@ import movieRouter from "./routes/movie-routes.js";
 import bookingRouter from "./routes/booking-routes.js";
 import errorHandler from "./errorHandler.js";
 import cors from "cors";
-import dbConnection from "./connector/connector.js";
 
+// Load environment variables from .env file
 dotenv.config();
 
 const app = express();
 
-
-
-// async function main() {
-//   await mongoose.connect(`mongodb+srv://ankushrana9458:${process.env.MONGODB_PWD}@cluster0.38osesy.mongodb.net/?retryWrites=true&w=majority`);
-//   // await mongoose.connect('mongodb://localhost:27017')
-//   console.log("database connected");
-// }
-// main().catch((err) => console.log(err));
-
-//middlewares
+// Middleware
 app.use(cors());
 app.use(express.json());
-app.use(errorHandler);
-// app.get("/", (req, res) => {
-//     res.send('OK')
-// })
 app.use("/user", userRouter);
 app.use("/admin", adminRouter);
 app.use("/movie", movieRouter);
 app.use("/booking", bookingRouter);
+app.use(errorHandler);
 
-// Error handling middleware
-// app.use((error,req,res,next)=>{
-//     if(error){
-//         res.status(500).json({message: + error.message})
-//     }
-//     next();
-// })
+// Database connection
+const connectDB = async () => {
+  try {
+    await mongoose.connect(
+      `mongodb+srv://ankushrana9458:${process.env.MONGODB_PWD}@cluster0.38osesy.mongodb.net/?retryWrites=true&w=majority`,
+    );
+    console.log("Connected to Database");
+  } catch (error) {
+    console.error("Database connection failed", error);
+    process.exit(1); // Exit process with failure
+  }
+};
 
-// mongoose.connect(`mongodb+srv://ankushrana9458:${process.env.MONGODB_PWD}@cluster0.38osesy.mongodb.net/?retryWrites=true&w=majority`
-// )
+// Start server
+const startServer = () => {
+  const port = process.env.PORT || 5000;
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
+};
 
+// Initialize application
+const init = async () => {
+  await connectDB();
+  startServer();
+};
 
-// app.listen(5000, () => {
-//     console.log("connected to database and server running on port 5000")
-// });
-
-mongoose
-  .connect(
-    `mongodb+srv://ankushrana9458:${process.env.MONGODB_PWD}@cluster0.38osesy.mongodb.net/?retryWrites=true&w=majority`
-  )
-  .then(() =>
-    app.listen(process.env.PORT, () =>
-      console.log("Connected To Database And Server is running")
-    )
-  )
-  .catch((e) => console.log(e));
-  // app.listen(process.env.PORT, async () => {
-  //   try {
-  //     await dbConnection();
-  //     console.log("Connected to database successfully");
-  //   } catch (error) {
-  //     console.log("Not connected to database", error);
-  //     console.log("Something went wrong while connecting to database");
-  //   }
-  //   console.log(`server is running at ${process.env.PORT}`);
-  // });
-
+init();
