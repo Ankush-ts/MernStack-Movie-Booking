@@ -11,6 +11,7 @@ import cors from "cors";
 // Load environment variables from .env file
 dotenv.config();
 
+const port=5000;
 const app = express();
 
 // Middleware
@@ -37,7 +38,6 @@ const connectDB = async () => {
 
 // Start server
 const startServer = () => {
-  const port = process.env.PORT || 5000;
   app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
   });
