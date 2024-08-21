@@ -11,7 +11,7 @@ const Header = () => {
     const dispatch = useDispatch();
     const isAdminLoggedIn = useSelector((state) => state.admin.isLoggedIn);
     const isUserLoggedIn = useSelector((state) => state.user.isLoggedIn);
-    const [value, setValue] = useState();
+  
     const [movies, setMovies] = useState([]);
 
     useEffect(() => {
@@ -19,7 +19,15 @@ const Header = () => {
             .then((data) => setMovies(data.movies))
             .catch((err) => console.log(err))
     }, [])
-    console.log(movies)
+
+    // console.log(movies)
+
+
+    const [value, setValue] = useState(0);
+    const handleSelect = (event, newValue) => {
+        setValue(newValue);
+    };
+
     const logout = (isAdmin) => {
         dispatch(isAdmin? adminActions.logout() : userActions.logout());
     };
@@ -35,7 +43,8 @@ const Header = () => {
         <AppBar position='sticky' sx={{ bgcolor: "darkolivegreen" }}>
             <Toolbar>
                 <Box width={'20%'}>
-                    <IconButton LinkComponent={Link} to={"/"}>
+                    <IconButton LinkComponent={Link} to={"/"}
+                    onClick={() => setValue(0)}>
                     <MovieIcon  />
                     </IconButton>
                     
@@ -52,35 +61,29 @@ const Header = () => {
                             {...params} placeholder="Search Movies" />}
                     />
                 </Box>
+                
                 <Box display={'flex'}>
                     <Tabs
-                        onChange={(e, val) => setValue(val)}
+                        onChange={handleSelect}
                         value={value}
-                        textColor='inherit' indicatorColor='secondary'>
+                        textColor='inherit'
+                        indicatorColor='secondary'>
                         <Tab LinkComponent={Link} to="/movies" label={"Movies"} />
-                        {!isAdminLoggedIn && !isUserLoggedIn && (
-                            <>
-                                <Tab LinkComponent={Link} to="/admin" label={"Admin"} />
-                                <Tab LinkComponent={Link} to="/auth" label={"Auth"} />
-                            </>)}
-                        {isUserLoggedIn && (
-                            <>
-                                <Tab LinkComponent={Link} to="/user" label={"Profile"} />
-                                <Tab 
-                                onClick={()=>logout(false)}
-                                label={"Logout"}
-                                LinkComponent={Link} to="/"  />
-                            </>)}
-                        {isAdminLoggedIn && (
-                            <>
-                                <Tab LinkComponent={Link} to="/add" label={"Add Movie"} />
-                                <Tab LinkComponent={Link} to="/user-admin" label={"Profile"} />
-                                <Tab 
-                                onClick={()=>logout(true)}
-                                label={"Logout"} 
-                                LinkComponent={Link} to="/" />
-                            </>)}
-
+                            {/* Conditional rendering using array syntax */}
+                            {(!isAdminLoggedIn && !isUserLoggedIn) && [
+                            <Tab LinkComponent={Link} to="/admin" label={"Admin"} />,
+                            <Tab LinkComponent={Link} to="/auth" label={"User Login"} />,
+                        ]}
+                        {isUserLoggedIn && [
+                            <Tab LinkComponent={Link} to="/user" label={"Profile"} />,
+                            <Tab onClick={() => logout(false)} label={"Logout"} LinkComponent={Link} to="/" />,
+                        ]}
+                        {isAdminLoggedIn && [
+                            <Tab LinkComponent={Link} to="/add" label={"Add Movie"} />,
+                            <Tab LinkComponent={Link} to="/user-admin" label={"Profile"} />,
+                            <Tab onClick={() => logout(true)}   
+                                label={"Logout"} LinkComponent={Link} to="/" />,
+                        ]}
                     </Tabs>
                 </Box>
 
