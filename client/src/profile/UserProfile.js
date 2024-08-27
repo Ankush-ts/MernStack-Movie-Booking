@@ -3,11 +3,13 @@ import { deleteBooking, getUserBooking, getUserDetails } from '../api-helpers/ap
 import { Box, IconButton, List, ListItem, ListItemText, Typography } from '@mui/material';
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { toast } from 'react-toastify';
 
 
 const UserProfile = () => {
-    const [bookings, setBookings] = useState();
+    const [bookings, setBookings] = useState([]);
     const [user, setUser] = useState();
+
     useEffect(() => {
         getUserBooking()
             .then((res) => setBookings(res.bookings))
@@ -18,20 +20,24 @@ const UserProfile = () => {
             .catch((err) => console.log(err));
     }, []);
 
-
-
-    // console.log(bookings);
     const handleDelete = (id) => {
         deleteBooking(id)
-            .then((res) => console.log(res))
+            .then((res) => {
+                console.log(res);
+                // Update the bookings state by filtering out the deleted booking
+                setBookings((prevBookings) =>
+                    prevBookings.filter((booking) => booking._id !== id)
+                );
+            })
             .catch((err) => console.log(err));
+            toast.success("Booking Deleted Succesfully..");
+            
     };
+
     return (
         <Box width={"100%"} display="flex">
-            
-                <Fragment>
-                    {" "}
-                    {user && (
+            <>
+                {user && (
                     <Box
                         flexDirection={"column"}
                         justifyContent="center"
@@ -48,7 +54,9 @@ const UserProfile = () => {
                             textAlign={"center"}
                             border={"1px solid #ccc"}
                             borderRadius={6}
-                        >Name: {user.name}</Typography>
+                        >
+                            Name: {user.name}
+                        </Typography>
 
                         <Typography
                             mt={1}
@@ -57,17 +65,20 @@ const UserProfile = () => {
                             textAlign={"center"}
                             border={"1px solid #ccc"}
                             borderRadius={6}
-                        >Email: {user.email}</Typography>
-
+                        >
+                            Email: {user.email}
+                        </Typography>
                     </Box>
-)}
-                    { bookings && (<Box width={'70%'} display={'flex'} flexDirection={'column'}>
+                )}
+                {bookings && (
+                    <Box width={'70%'} display={'flex'} flexDirection={'column'}>
                         <Typography
                             variant='h3'
                             fontFamily={'cursive'}
                             textAlign={'center'}
                             padding={2}
-                        >Bookings
+                        >
+                            Bookings
                         </Typography>
                         <Box margin={'auto'} display={'flex'}
                             flexDirection={'column'}
@@ -103,14 +114,15 @@ const UserProfile = () => {
                                             </IconButton>
                                         </ListItemText>
 
-                                    </ListItem>)}
+                                    </ListItem>
+                                )}
                             </List>
                         </Box>
                     </Box>
-    )}
-                </Fragment>
-           
+                )}
+            </>
         </Box>
     );
 };
+
 export default UserProfile;

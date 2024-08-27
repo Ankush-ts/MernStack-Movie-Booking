@@ -11,6 +11,7 @@ import Booking from "./components/Bookings/Booking";
 import UserProfile from "./profile/UserProfile";
 import AddMovie from "./components/Movies/AddMovie";
 import AdminProfile from "./profile/AdminProfile";
+import { ToastContainer } from 'react-toastify'
 
 function App() {
   const dispatch = useDispatch();
@@ -19,51 +20,47 @@ function App() {
   console.log("isAdminLoggedIn", isAdminLoggedIn);
   console.log("isUserLoggedIn", isUserLoggedIn);
   useEffect(() => {
-    if (localStorage.getItem("userId")){
+    if (localStorage.getItem("userId")) {
       dispatch(userActions.login());
-    }  
-    else if(localStorage.getItem("adminId")){
+    }
+    else if (localStorage.getItem("adminId")) {
       dispatch(adminActions.login());
     }
-  },[dispatch])
+  }, [dispatch])
 
-  
 
-  
+
+
   return (
     <div >
-      <Header/>
+      <Header />
       <section>
         <Routes>
-          <Route path="/" element={<HomePage/>}/>
-          <Route path="/movies" element={<Movie/>}/>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/movies" element={<Movie />} />
           {!isAdminLoggedIn && !isUserLoggedIn && (
             <>
-             <Route path="/admin" element={<Admin/>}/>
-             <Route path="/auth" element={<Auth/>}/>
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/auth" element={<Auth />} />
             </>
           )}
-          
+
           {!isAdminLoggedIn && isUserLoggedIn && (
             <>
-             <Route path="/user" element ={<UserProfile/>}/>
-             <Route path="/booking/:id" element ={<Booking/>}/>
+              <Route path="/user" element={<UserProfile />} />
+              <Route path="/booking/:id" element={<Booking />} />
             </>
           )}
           {isAdminLoggedIn && !isUserLoggedIn && (
             <>
-             <Route path="/add" element ={<AddMovie/>}/>
-             <Route path="/user-admin" element ={<AdminProfile/>}/>
+              <Route path="/add" element={<AddMovie />} />
+              <Route path="/user-admin" element={<AdminProfile />} />
             </>
           )}
-          
-          
-          
-          
-          
         </Routes>
+        <ToastContainer position='top-right' theme='dark' />
       </section>
-     
+
     </div>
   );
 }
